@@ -1,9 +1,9 @@
-- name: Log drupal metadata
+- name: Log drupal metadata - {{ instance.name }}
   shell: "{{ drush_path }} @{{ instance.name }} pm-list > {{ system_watch_log_dir }}/drupal_modules_{{ instance.name }}.txt"
   changed_when: false
 
-- name: Log drupal git status
-  shell: "git status > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt"
+- name: Log drupal git status - {{ instance.name }}
+  shell: "git --work-tree={{ instance.dir }} status > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt"
   changed_when: false
   args:
     chdir: '{{ instance.dir }}'
