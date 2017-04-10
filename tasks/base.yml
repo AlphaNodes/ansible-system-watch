@@ -1,0 +1,96 @@
+---
+- set_fact: system_watch_log_dir="{{ system_watch_dir }}/{{ system_watch_host }}"
+- set_fact: drupal_instances="{{ drupal_instances | default([]) }}"
+- set_fact: redmine_instances="{{ redmine_instances | default([]) }}"
+
+- fail:
+    msg: 'system_watch_repo has to be set. You can also use --extra-vars "system_watch_repo=your-git-repo"'
+  when: system_watch_repo == ''
+
+- name: Git pull system-watch for latest changes
+  git:
+    repo: '{{ system_watch_repo }}'
+    dest: '{{ system_watch_dir }}'
+    force: yes
+    accept_hostkey: yes
+  changed_when: false
+
+- name: Make sure system-watch dir exists
+  file:
+    path: '{{ system_watch_log_dir }}'
+    state: directory
+
+- name: Sync etc directory for tracking
+  synchronize:
+    mode: pull
+    src: /etc/
+    dest: '{{ system_watch_log_dir }}/etc'
+    delete: yes
+    rsync_opts:
+          - "--exclude={{ system_watch_excludes | join(' --exclude=') | default('') }}"
+  delegate_to: "{{ inventory_hostname }}"
+  register: sync_result
+
+- block:
+  # shell allows redirects to file
+  - name: Build etc metadata for tracking
+    shell: ls -Rl --full-time {{ system_watch_log_dir }}/etc > {{ system_watch_log_dir}}/etc_metadata.txt
+    when: sync_result.changed
+
+  # shell allows redirects to file
+  - name: Create system package list
+    shell: dpkg-query -W -f '${Status}\t${Package} ${Version}\n' | egrep '(ok installed|ok config-files)' | cut -f2,3 > {{ system_watch_log_dir }}/packages.txt
+    register: system_packages
+    changed_when: false
+
+  - name: Check for system package changes
+    command: git -C {{ system_watch_dir }} status
+    register: git_system_packages
+    changed_when: "'packages.txt' in git_system_packages.stdout"
+
+  - include: include_git.yml
+    when: system_watch_git_status_repos | length and (mysql_replication_role is undefined or mysql_replication_role=='master')
+
+  - include: include_drupal.yml
+    with_items: '{{ drupal_instances }}'
+    loop_control:
+      loop_var: instance
+    when: drupal_instances | length and (mysql_replication_role is undefined or mysql_replication_role=='master')
+
+  - include: include_redmine.yml
+    with_items: '{{ redmine_instances }}'
+    loop_control:
+      loop_var: instance
+    when: >
+      redmine_instances | length and (instance.state is undefined or instance.state=='active') and
+      (mysql_replication_role is undefined or mysql_replication_role=='master')
+
+  - name: Check for changes
+    shell: git -C {{ system_watch_dir }} status
+    register: git_add_pre
+    changed_when: "'Untracked files' in git_add_pre.stdout or 'Changes not staged' in git_add_pre.stdout"
+
+  - name: Add new files to system-watch repo for push
+    command: git -C {{ system_watch_dir }} add -A {{ system_watch_log_dir }}
+    register: git_add
+    when: git_add_pre.changed
+    changed_when: git_add.rc == 0
+
+  - name: Check for commits
+    command: git -C {{ system_watch_dir }} status
+    register: git_commit_pre
+    changed_when: "'Changes to be committed' in git_commit_pre.stdout"
+
+  - name: Commit files to system-watch repo for push
+    command: git -C {{ system_watch_dir }} commit -m "Changes found on {{ system_watch_host }}"
+    register: git_commit
+    when: git_commit_pre.changed
+
+  - name: Push files to system-watch repo
+    command: git -C {{ system_watch_dir }} --work-tree={{ system_watch_dir }} push
+    when: git_commit_pre.changed
+
+  environment:
+    GIT_WORK_TREE: '{{ system_watch_dir }}'
+    LANG: 'en_US.UTF-8'
+    LC_ALL: 'en_US.UTF-8'

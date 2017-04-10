@@ -1,0 +1,2 @@
+- include: base.yml
+  tags: system-watch

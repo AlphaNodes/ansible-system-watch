@@ -1,0 +1,33 @@
+# set it to git repository for logging (needs write permissions)
+# e.g. system_watch_repo: ssh://git@git.yourserver.com/log.git
+system_watch_repo: ''
+
+system_watch_dir: /srv/.log
+system_watch_host: '{{ ansible_hostname }}'
+system_watch_excludes:
+  - ~
+  - .dpkg-new
+  - .dpkg-old
+  - adjtime
+  - /mtab
+  - ld.so.cache
+  - hosts.deny
+  - hosts.deny.purge.bak
+
+# Log status of these git repositories (path to git project)
+# (For drupal_instances and redmine_instances this is done automatically)
+# e.g.
+# - name: project1
+#   path: /srv/project1
+# - name: project2
+#   path: /srv/project2
+system_watch_git_status_repos: []
+
+# if drupal_instances is defined and iterable, Drupal watching is active
+
+# if redmine_instances is defined and iterable, Redmine watching is active
+
+# For replication (advanced)
+
+# git, drupal and redmine watch only run, if
+# mysql_replication_role is undefined or mysql_replication_role=='master'

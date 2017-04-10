@@ -1,0 +1,31 @@
+- set_fact: redmine_dir="{{ instance.dir | default("/srv/" + instance.name) }}"
+
+- name: Log redmine gem metadata - {{ instance.name }}
+  become: yes
+  become_user: '{{ instance.name }}'
+  shell: bash -lc "gem list > /var/run/{{ instance.name }}/redmine_info.txt"
+  args:
+    chdir: '{{ redmine_dir }}'
+  changed_when: false
+
+- name: Log redmine metadata - {{ instance.name }}
+  become: yes
+  become_user: '{{ instance.name }}'
+  shell: bash -lc "bin/about >> /var/run/{{ instance.name }}/redmine_info.txt"
+  args:
+    chdir: '{{ redmine_dir }}'
+  changed_when: false
+
+- name: Copy redmine metadata to git - {{ instance.name }}
+  synchronize:
+    mode: pull
+    src: /var/run/{{ instance.name }}/redmine_info.txt
+    dest: "{{ system_watch_log_dir }}/{{ '' if instance.name=='redmine' else 'redmine_' }}{{ instance.name }}.txt"
+  changed_when: false
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Log redmine git status - {{ instance.name }}
+  shell: "git --work-tree={{ redmine_dir }} status > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt"
+  changed_when: false
+  args:
+    chdir: '{{ redmine_dir }}'

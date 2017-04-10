@@ -1,0 +1,6 @@
+- name: Log git status
+  shell: "git --work-tree={{ item.path }} status > {{ system_watch_log_dir }}/git_status_{{ item.name }}.txt"
+  with_items: '{{ system_watch_git_status_repos }}'
+  changed_when: false
+  args:
+    chdir: '{{ item.path }}'
