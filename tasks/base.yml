@@ -49,7 +49,10 @@
     changed_when: "'packages.txt' in git_system_packages.stdout"
 
   - include: include_git.yml
-    when: system_watch_git_status_repos | length and (mysql_replication_role is undefined or mysql_replication_role=='master')
+    with_items: '{{ system_watch_git_status_repos | default([]) }}'
+    loop_control:
+      loop_var: instance
+    when: mysql_replication_role is undefined or mysql_replication_role=='master'
 
   - include: include_drupal.yml
     with_items: '{{ drupal_instances }}'

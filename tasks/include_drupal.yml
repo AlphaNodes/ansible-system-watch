@@ -2,8 +2,22 @@
   shell: "{{ drush_path }} @{{ instance.name }} pm-list > {{ system_watch_log_dir }}/drupal_modules_{{ instance.name }}.txt"
   changed_when: false
 
+- name: Add drupal info for branches - {{ instance.name }}
+  shell: 'echo -e "Branches:\n" > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+  changed_when: false
+
+- name: Log current drupal git branches - {{ instance.name }}
+  shell: "git --work-tree={{ instance.dir }} branch -a >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt"
+  changed_when: false
+  args:
+    chdir: '{{ instance.dir }}'
+
+- name: Add drupal info for change status - {{ instance.name }}
+  shell: 'echo -e "\nChanges found:\n" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+  changed_when: false
+
 - name: Log drupal git status - {{ instance.name }}
-  shell: "git --work-tree={{ instance.dir }} status > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt"
+  shell: "git --work-tree={{ instance.dir }} status -s >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt"
   changed_when: false
   args:
     chdir: '{{ instance.dir }}'
