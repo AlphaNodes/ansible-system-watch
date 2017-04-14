@@ -3,7 +3,7 @@
   changed_when: false
 
 - name: Add drupal info for branches - {{ instance.name }}
-  shell: 'echo -e "Branches:\n" > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+  shell: 'echo "{{ system_watch_git_header_branches }}" > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
   changed_when: false
 
 - name: Log current drupal git branches - {{ instance.name }}
@@ -13,7 +13,7 @@
     chdir: '{{ instance.dir }}'
 
 - name: Add drupal info for change status - {{ instance.name }}
-  shell: 'echo -e "\nChanges found:\n" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+  shell: 'echo "{{ system_watch_git_header_changes }}" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
   changed_when: false
 
 - name: Log drupal git status - {{ instance.name }}
