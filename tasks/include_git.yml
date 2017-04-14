@@ -1,5 +1,17 @@
+- name: Log current git branches
+  shell: "git --work-tree={{ item.path }} branch -a > {{ system_watch_log_dir }}/git_status_{{ item.name }}.txt"
+  with_items: '{{ system_watch_git_status_repos }}'
+  changed_when: false
+  args:
+    chdir: '{{ item.path }}'
+
+- name: Add info for change status
+  shell: 'echo -e "\nChanges found:\n" >> {{ system_watch_log_dir }}/git_status_{{ item.name }}.txt'
+  with_items: '{{ system_watch_git_status_repos }}'
+  changed_when: false
+
 - name: Log git status
-  shell: "git --work-tree={{ item.path }} status > {{ system_watch_log_dir }}/git_status_{{ item.name }}.txt"
+  shell: "git --work-tree={{ item.path }} status -s >> {{ system_watch_log_dir }}/git_status_{{ item.name }}.txt"
   with_items: '{{ system_watch_git_status_repos }}'
   changed_when: false
   args:
