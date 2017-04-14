@@ -25,7 +25,7 @@
   delegate_to: "{{ inventory_hostname }}"
 
 - name: Add redmine info for branches - {{ instance.name }}
-  shell: 'echo "{{ system_watch_git_header_branches }}" > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+  shell: 'echo "Branches:" > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
   changed_when: false
 
 - name: Log current redmine git branches - {{ instance.name }}
@@ -34,8 +34,12 @@
   args:
     chdir: '{{ redmine_dir }}'
 
+- name: Add empty line - {{ instance.name }}
+  shell: 'echo "" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+  changed_when: false
+
 - name: Add redmine info for change status - {{ instance.name }}
-  shell: 'echo "{{ system_watch_git_header_changes }}" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+  shell: 'echo "Changes:" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
   changed_when: false
 
 - name: Log redmine git status - {{ instance.name }}

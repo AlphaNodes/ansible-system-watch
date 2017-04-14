@@ -1,5 +1,5 @@
 - name: Add info for branches
-  shell: 'echo "{{ system_watch_git_header_branches }}" > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+  shell: 'echo "Branches:" > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
   with_items: '{{ system_watch_git_status_repos }}'
   changed_when: false
 
@@ -10,8 +10,12 @@
   args:
     chdir: '{{ instance.path }}'
 
+- name: Add empty line - {{ instance.name }}
+  shell: 'echo "" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+  changed_when: false
+
 - name: Add info for change status
-  shell: 'echo "{{ system_watch_git_header_changes }}" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+  shell: 'echo "Changes:" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
   with_items: '{{ system_watch_git_status_repos }}'
   changed_when: false
 
