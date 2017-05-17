@@ -1,9 +1,9 @@
 - name: Log drush metadata - {{ instance.name }}
-  shell: "{{ drush_path }} @{{ instance.name }} pm-list > {{ system_watch_log_dir }}/drupal_{{ instance.name }}.txt"
+  shell: "{{ drush_path }} @{{ instance.name }} status > {{ system_watch_log_dir }}/drupal_{{ instance.name }}.txt"
   changed_when: false
 
 - name: Log drupal module list - {{ instance.name }}
-  shell: "{{ drush_path }} @{{ instance.name }} pm-list > {{ system_watch_log_dir }}/drupal_modules_{{ instance.name }}.txt"
+  shell: "{{ drush_path }} @{{ instance.name }} pm-list >> {{ system_watch_log_dir }}/drupal_{{ instance.name }}.txt"
   changed_when: false
 
 - name: Add drupal info for branches - {{ instance.name }}
