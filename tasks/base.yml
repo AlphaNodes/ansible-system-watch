@@ -48,19 +48,19 @@
     register: git_system_packages
     changed_when: "'packages.txt' in git_system_packages.stdout"
 
-  - include: include_git.yml
+  - include_tasks: include_git.yml
     with_items: '{{ system_watch_git_status_repos | default([]) }}'
     loop_control:
       loop_var: instance
     when: mysql_replication_role is undefined or mysql_replication_role=='master'
 
-  - include: include_drupal.yml
+  - include_tasks: include_drupal.yml
     with_items: '{{ drupal_instances }}'
     loop_control:
       loop_var: instance
     when: drupal_instances | length and (mysql_replication_role is undefined or mysql_replication_role=='master')
 
-  - include: include_redmine.yml
+  - include_tasks: include_redmine.yml
     with_items: '{{ redmine_instances }}'
     loop_control:
       loop_var: instance

@@ -6,7 +6,7 @@ galaxy_info:
   description: System watch (with Git, Redmine and Drupal support) for Debian and Ubuntu.
   company: AlphaNodes GmbH
   license: GPL Version 3
-  min_ansible_version: 2.0
+  min_ansible_version: 2.4
   platforms:
     - name: Ubuntu
       versions:
