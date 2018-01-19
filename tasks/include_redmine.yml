@@ -1,4 +1,5 @@
 - set_fact: redmine_dir="{{ instance.dir | default("/srv/" + instance.name) }}"
+- set_fact: redmine_rails_env="{{ instance.rails_env | default(rails_env) }}"
 
 - name: Log redmine gem metadata - {{ instance.name }}
   become: yes
@@ -14,6 +15,8 @@
   shell: bash -lc "bin/about >> /var/run/{{ instance.name }}/redmine_info.txt"
   args:
     chdir: '{{ redmine_dir }}'
+  environment:
+    RAILS_ENV: '{{ redmine_rails_env }}'
   changed_when: false
 
 - name: Copy redmine metadata to git - {{ instance.name }}

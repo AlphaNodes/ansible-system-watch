@@ -31,3 +31,5 @@ system_watch_git_status_repos: []
 
 # git, drupal and redmine watch only run, if
 # mysql_replication_role is undefined or mysql_replication_role=='master'
+
+rails_env: production
