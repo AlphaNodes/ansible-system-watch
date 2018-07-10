@@ -13,7 +13,7 @@ system_watch_excludes:
   - ld.so.cache
   - hosts.deny
   - hosts.deny.purge.bak
-  - /etc/apt/trusted.gpg.d
+  - trusted.gpg.d
 
 # Log status of these git repositories (path to git project)
 # (For drupal_instances and redmine_instances this is done automatically)
