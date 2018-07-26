@@ -10,6 +10,7 @@ system_watch_excludes:
   - .dpkg-old
   - adjtime
   - /mtab
+  - /letsencrypt
   - ld.so.cache
   - hosts.deny
   - hosts.deny.purge.bak
