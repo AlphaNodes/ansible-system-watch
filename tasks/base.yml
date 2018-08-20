@@ -34,7 +34,7 @@
 - block:
   # shell allows redirects to file
   - name: Build etc metadata for tracking
-    shell: ls -Rl --full-time {{ system_watch_log_dir }}/etc > {{ system_watch_log_dir}}/etc_metadata.txt
+    shell: ls -Rl --ignore={{ system_watch_excludes | join(' --ignore=') | default('') }} --full-time {{ system_watch_log_dir }}/etc > {{ system_watch_log_dir}}/etc_metadata.txt
     when: sync_result.changed
 
   # shell allows redirects to file
