@@ -1,11 +1,9 @@
 - name: Add info for branches
   shell: 'echo "Branches:" > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
-  with_items: '{{ system_watch_git_status_repos }}'
   changed_when: false
 
 - name: Log current git branches
   shell: "git --work-tree={{ instance.path }} branch -a >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt"
-  with_items: '{{ system_watch_git_status_repos }}'
   changed_when: false
   args:
     chdir: '{{ instance.path }}'
@@ -16,12 +14,10 @@
 
 - name: Add info for change status
   shell: 'echo "Changes:" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
-  with_items: '{{ system_watch_git_status_repos }}'
   changed_when: false
 
 - name: Log git status
   shell: "git --work-tree={{ instance.path }} status -s >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt"
-  with_items: '{{ system_watch_git_status_repos }}'
   changed_when: false
   args:
     chdir: '{{ instance.path }}'
