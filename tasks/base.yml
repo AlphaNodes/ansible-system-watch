@@ -5,7 +5,7 @@
 
 - fail:
     msg: 'system_watch_repo has to be set. You can also use --extra-vars "system_watch_repo=your-git-repo"'
-  when: not system_watch_repo
+  when: system_watch_repo == ''
 
 - name: Git pull system-watch for latest changes
   git:
