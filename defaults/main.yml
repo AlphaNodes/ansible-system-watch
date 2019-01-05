@@ -12,7 +12,6 @@ system_watch_rsync_opts:
   - "--exclude=*.dpkg-old"
   - "--exclude=adjtime"
   - "--exclude=/mtab"
-  - "--exclude=/letsencrypt"
   - "--exclude=/ld.so.cache"
   - "--exclude=/hosts.deny.purge.bak"
 
