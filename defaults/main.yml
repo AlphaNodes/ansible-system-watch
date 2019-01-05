@@ -4,17 +4,20 @@ system_watch_repo: ''
 
 system_watch_dir: /srv/.log
 system_watch_host: '{{ ansible_hostname }}'
-system_watch_excludes:
-  - ~
-  - .dpkg-new
-  - .dpkg-old
-  - adjtime
-  - /mtab
-  - /letsencrypt
-  - ld.so.cache
-  - hosts.deny
-  - hosts.deny.purge.bak
-  - trusted.gpg.d
+
+system_watch_rsync_opts:
+  - "--delete-excluded"
+  - "--exclude=*~"
+  - "--exclude=*.dpkg-new"
+  - "--exclude=*.dpkg-old"
+  - "--exclude=adjtime"
+  - "--exclude=/mtab"
+  - "--exclude=/letsencrypt"
+  - "--exclude=/ld.so.cache"
+  - "--exclude=/hosts.deny.purge.bak"
+
+# Additional options for ls, e.g. to ignore files/directories
+system_watch_ls_options: "--ignore='apt' --ignore='letsencrypt'"
 
 # Log status of these git repositories (path to git project)
 # (For drupal_instances and redmine_instances this is done automatically)
