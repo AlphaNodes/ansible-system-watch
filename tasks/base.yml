@@ -1,7 +1,11 @@
----
-- set_fact: system_watch_log_dir="{{ system_watch_dir }}/{{ system_watch_host }}"
-- set_fact: drupal_instances="{{ drupal_instances | default([]) }}"
-- set_fact: redmine_instances="{{ redmine_instances | default([]) }}"
+- name: Set system_watch_log_dir variable
+  set_fact: system_watch_log_dir="{{ system_watch_dir }}/{{ system_watch_host }}"
+
+- name: Set drupal_instances variable
+  set_fact: drupal_instances="{{ drupal_instances | default([]) }}"
+
+- name: Set redmine_instances variable
+  set_fact: redmine_instances="{{ redmine_instances | default([]) }}"
 
 - fail:
     msg: 'system_watch_repo has to be set. You can also use --extra-vars "system_watch_repo=your-git-repo"'

@@ -10,7 +10,6 @@ system_watch_rsync_opts:
   - "--exclude=*~"
   - "--exclude=*.dpkg-new"
   - "--exclude=*.dpkg-old"
-  - "--exclude=adjtime"
   - "--exclude=/mtab"
   - "--exclude=/ld.so.cache"
   - "--exclude=/hosts.deny.purge.bak"

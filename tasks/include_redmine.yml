@@ -1,5 +1,8 @@
-- set_fact: redmine_dir="{{ instance.dir | default("/srv/" + instance.name) }}"
-- set_fact: redmine_rails_env="{{ instance.rails_env | default(rails_env) }}"
+- name: Set redmine_dir variable
+  set_fact: redmine_dir="{{ instance.dir | default("/srv/" + instance.name) }}"
+
+- name: Set redmine_rails_env variable
+  set_fact: redmine_rails_env="{{ instance.rails_env | default(rails_env) }}"
 
 - name: Log redmine gem metadata - {{ instance.name }}
   become: yes
