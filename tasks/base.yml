@@ -19,6 +19,11 @@
     accept_hostkey: yes
   changed_when: false
 
+- name: Restrict read permissions of log directory
+  file:
+    path: '{{ system_watch_dir }}'
+    mode: 0700
+
 - name: Make sure system-watch dir exists
   file:
     path: '{{ system_watch_log_dir }}'
