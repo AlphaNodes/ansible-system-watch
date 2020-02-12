@@ -66,15 +66,19 @@
     loop: '{{ drupal_instances }}'
     loop_control:
       loop_var: instance
-    when: drupal_instances | length and (mysql_replication_role is undefined or mysql_replication_role == 'master')
+    when: >
+      drupal_instances | length
+      and (instance.state is undefined or instance.state == 'active')
+      and (mysql_replication_role is undefined or mysql_replication_role == 'master')
 
   - include_tasks: include_redmine.yml
     loop: '{{ redmine_instances }}'
     loop_control:
       loop_var: instance
     when: >
-      redmine_instances | length and (instance.state is undefined or instance.state == 'active') and
-      (mysql_replication_role is undefined or mysql_replication_role == 'master')
+      redmine_instances | length
+      and (instance.state is undefined or instance.state == 'active')
+      and (mysql_replication_role is undefined or mysql_replication_role == 'master')
 
   - name: Check for changes
     shell: git -C {{ system_watch_dir }} status
