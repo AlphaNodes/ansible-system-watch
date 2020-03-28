@@ -1,55 +1,61 @@
+---
+- name: Set instance variables
+  set_fact:
+    instance: "{{ r_instance.value }}"
+    instance_name: "{{ r_instance.key }}"
+
 - name: Set redmine_dir variable
-  set_fact: redmine_dir="{{ instance.dir | default("/srv/" + instance.name) }}"
+  set_fact: redmine_dir="{{ instance.dir | default("/srv/" + instance_name) }}"
 
 - name: Set redmine_rails_env variable
   set_fact: redmine_rails_env="{{ instance.rails_env | default(rails_env) }}"
 
-- name: Log redmine gem metadata - {{ instance.name }}
+- name: Log redmine gem metadata - {{ instance_name }}
   become: yes
-  become_user: '{{ instance.name }}'
-  shell: bash -lc "gem list > /run/{{ instance.name }}/redmine_info.txt"
+  become_user: '{{ instance_name }}'
+  shell: bash -lc "gem list > /run/{{ instance_name }}/redmine_info.txt"
   args:
     chdir: '{{ redmine_dir }}'
   changed_when: false
 
-- name: Log redmine metadata - {{ instance.name }}
+- name: Log redmine metadata - {{ instance_name }}
   become: yes
-  become_user: '{{ instance.name }}'
-  shell: bash -lc "bin/about >> /run/{{ instance.name }}/redmine_info.txt"
+  become_user: '{{ instance_name }}'
+  shell: bash -lc "bin/about >> /run/{{ instance_name }}/redmine_info.txt"
   args:
     chdir: '{{ redmine_dir }}'
   environment:
     RAILS_ENV: '{{ redmine_rails_env }}'
   changed_when: false
 
-- name: Copy redmine metadata to git - {{ instance.name }}
+- name: Copy redmine metadata to git - {{ instance_name }}
   synchronize:
     mode: pull
-    src: /run/{{ instance.name }}/redmine_info.txt
-    dest: "{{ system_watch_log_dir }}/{{ '' if instance.name=='redmine' else 'redmine_' }}{{ instance.name }}.txt"
+    src: /run/{{ instance_name }}/redmine_info.txt
+    dest: "{{ system_watch_log_dir }}/{{ '' if instance_name=='redmine' else 'redmine_' }}{{ instance_name }}.txt"
   changed_when: false
   delegate_to: "{{ inventory_hostname }}"
 
-- name: Add redmine info for branches - {{ instance.name }}
-  shell: 'echo "Branches:" > {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+- name: Add redmine info for branches - {{ instance_name }}
+  shell: 'echo "Branches:" > {{ system_watch_log_dir }}/git_status_{{ instance_name }}.txt'
   changed_when: false
 
-- name: Log current redmine git branches - {{ instance.name }}
-  shell: "git --work-tree={{ redmine_dir }} branch -a >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt"
+- name: Log current redmine git branches - {{ instance_name }}
+  shell: "git --work-tree={{ redmine_dir }} branch -a >> {{ system_watch_log_dir }}/git_status_{{ instance_name }}.txt"
   changed_when: false
   args:
     chdir: '{{ redmine_dir }}'
 
-- name: Add empty line - {{ instance.name }}
-  shell: 'echo "" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+- name: Add empty line - {{ instance_name }}
+  shell: 'echo "" >> {{ system_watch_log_dir }}/git_status_{{ instance_name }}.txt'
   changed_when: false
 
-- name: Add redmine info for change status - {{ instance.name }}
-  shell: 'echo "Changes:" >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt'
+- name: Add redmine info for change status - {{ instance_name }}
+  shell: 'echo "Changes:" >> {{ system_watch_log_dir }}/git_status_{{ instance_name }}.txt'
   changed_when: false
 
-- name: Log redmine git status - {{ instance.name }}
-  shell: "git --work-tree={{ redmine_dir }} status -s >> {{ system_watch_log_dir }}/git_status_{{ instance.name }}.txt"
+- name: Log redmine git status - {{ instance_name }}
+  shell: "git --work-tree={{ redmine_dir }} status -s >> {{ system_watch_log_dir }}/git_status_{{ instance_name }}.txt"
   changed_when: false
   args:
     chdir: '{{ redmine_dir }}'

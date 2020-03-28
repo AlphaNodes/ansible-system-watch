@@ -1,12 +1,6 @@
 - name: Set system_watch_log_dir variable
   set_fact: system_watch_log_dir="{{ system_watch_dir }}/{{ system_watch_host }}"
 
-- name: Set drupal_instances variable
-  set_fact: drupal_instances="{{ drupal_instances | default([]) }}"
-
-- name: Set redmine_instances variable
-  set_fact: redmine_instances="{{ redmine_instances | default([]) }}"
-
 - fail:
     msg: 'system_watch_repo has to be set. You can also use --extra-vars "system_watch_repo=your-git-repo"'
   when: system_watch_repo == ''
@@ -63,22 +57,20 @@
     when: mysql_replication_role is undefined or mysql_replication_role=='master'
 
   - include_tasks: include_drupal.yml
-    loop: '{{ drupal_instances }}'
+    loop: '{{ drupal_instances | default([]) }}'
     loop_control:
       loop_var: instance
-    when: >
-      drupal_instances | length
-      and (instance.state is undefined or instance.state == 'active')
-      and (mysql_replication_role is undefined or mysql_replication_role == 'master')
+    when:
+      - instance.state is undefined or instance.state == 'active'
+      - mysql_replication_role is undefined or mysql_replication_role == 'master'
 
   - include_tasks: include_redmine.yml
-    loop: '{{ redmine_instances }}'
+    loop: '{{ redmine_instances | default({}) | dict2items }}'
     loop_control:
-      loop_var: instance
-    when: >
-      redmine_instances | length
-      and (instance.state is undefined or instance.state == 'active')
-      and (mysql_replication_role is undefined or mysql_replication_role == 'master')
+      loop_var: r_instance
+    when:
+      - r_instance.state is undefined or r_instance.state == 'active'
+      - mysql_replication_role is undefined or mysql_replication_role == 'master'
 
   - name: Check for changes
     shell: git -C {{ system_watch_dir }} status

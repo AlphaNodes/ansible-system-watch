@@ -28,7 +28,7 @@ system_watch_git_status_repos: []
 
 # if drupal_instances is defined and iterable, Drupal watching is active
 
-# if redmine_instances is defined and iterable, Redmine watching is active
+# if redmine_instances is defined and is a dictionary, Redmine watching is active
 
 # For replication (advanced)
 
