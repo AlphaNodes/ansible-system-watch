@@ -69,7 +69,7 @@
     loop_control:
       loop_var: r_instance
     when:
-      - r_instance.value.state is undefined or r_instance.value.state == 'active'
+      - item.value.state is undefined or item.value.state == 'active'
       - mysql_replication_role is undefined or mysql_replication_role == 'master'
 
   - name: Check for changes
