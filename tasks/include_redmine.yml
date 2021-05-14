@@ -5,28 +5,30 @@
     instance_name: "{{ r_instance.key }}"
 
 - name: Set redmine_dir variable
-  set_fact: redmine_dir="{{ instance.dir | default("/srv/" + instance_name) }}"
+  set_fact:
+    redmine_dir: '{{ instance.dir | default("/srv/" + instance_name + "/redmine") }}'
 
 - name: Set redmine_rails_env variable
-  set_fact: redmine_rails_env="{{ instance.rails_env | default(rails_env) }}"
+  set_fact:
+    redmine_rails_env: "{{ instance.rails_env | default(rails_env) }}"
 
 - name: Log redmine gem metadata - {{ instance_name }}
-  become: yes
-  become_user: '{{ instance_name }}'
   shell: bash -lc "gem list > /run/{{ instance_name }}/redmine_info.txt"
   args:
     chdir: '{{ redmine_dir }}'
   changed_when: false
-
-- name: Log redmine metadata - {{ instance_name }}
   become: yes
   become_user: '{{ instance_name }}'
+
+- name: Log redmine metadata - {{ instance_name }}
   shell: bash -lc "bin/about >> /run/{{ instance_name }}/redmine_info.txt"
   args:
     chdir: '{{ redmine_dir }}'
   environment:
     RAILS_ENV: '{{ redmine_rails_env }}'
   changed_when: false
+  become: yes
+  become_user: '{{ instance_name }}'
 
 - name: Copy redmine metadata to git - {{ instance_name }}
   synchronize:
